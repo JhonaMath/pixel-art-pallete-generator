@@ -66,6 +66,7 @@ function Pallete(props: PalleteProps) {
 
 
   content = colorList.map((c, i) => (<PalleteTile
+    key={i}
     color={convertColorToHex(c)}
     selected={selectedIndex == i}
     blocked={blockedIndexes.includes(i)}

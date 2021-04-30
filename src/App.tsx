@@ -8,6 +8,9 @@ import CasinoIcon from '@material-ui/icons/Casino';
 import logo from './logo.svg';
 import './App.css';
 import LockIcon from '@material-ui/icons/Lock';
+import GitHubIcon from '@material-ui/icons/GitHub';
+import VideogameAssetIcon from '@material-ui/icons/VideogameAsset';
+import MailIcon from '@material-ui/icons/Mail';
 
 
 import dibujo from './logo.png';
@@ -123,8 +126,6 @@ async function callBackChangeImage(imageSrc: any, setImage: any, setDynamicImgDa
 
 function CheckBoxLabeled(props: { title: string, checked: boolean, onClick: any }) {
 
-  console.log(props)
-
   const CustomCheckbox = withStyles({
     root: {
       color: "#ffffff88",
@@ -138,9 +139,30 @@ function CheckBoxLabeled(props: { title: string, checked: boolean, onClick: any 
   return <div style={{ display: "flex", alignItems: "center" }}><CustomCheckbox {...props} /><span>{props.title}</span></div>
 }
 
-const originalImgData: any = [];
+
+
+function TagA(props: any) {
+  return <a href={props.href} target="_blank" className={"Button-container"} onClick={props.onClick}>{props.children} <div className={"tooltiptext"}>{props.toolTipText}</div></a>
+}
+
+function ContactSection() {
+  return (<div className={"App-contact-container "}>
+    <TagA href={"https://github.com/JhonaMath/pixel-art-pallete-generator"} toolTipText={"Code!"}>
+      <GitHubIcon fontSize="large" />
+    </TagA>
+    <TagA href={"https://o-lobster.itch.io/simple-dungeon-crawler-16x16-pixel-pack"} toolTipText={"Asset"}>
+      <VideogameAssetIcon fontSize="large" />
+    </TagA>
+    <TagA href={"mailto:jhonathan.barreiro@gmail.com"} toolTipText={"Contact! :)"}>
+      <MailIcon fontSize="large" />
+    </TagA>
+  </div>)
+}
 
 function App() {
+
+  const [windowSize, setWindowSize] = useState(0);
+
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [downloadName, setDownloadName] = useState("");
@@ -181,6 +203,12 @@ function App() {
 
 
   useEffect(() => {
+
+    document.addEventListener("resize", () => {
+      setWindowSize(window.innerWidth);
+    });
+
+    setWindowSize(window.innerWidth);
 
     const canvas: any = document.getElementById('canvas');
 
@@ -231,40 +259,50 @@ function App() {
           <canvas id="canvas" width="800" height="800" hidden={true}></canvas>
           <div style={{ height: "80%" }}>
             <PixelPerfect imageData={dynamicImgData} size={pixelSize} loading={loadingMessage} percent={loadingPercent} />
-
           </div>
-          <Slider onChange={(v) => { setPixelSize(v) }} min={1} max={50} value={pixelSize} />
+          <div className={"App-preview-input-container"}>
+            <Slider onChange={(v) => { setPixelSize(v) }} min={1} max={50} value={pixelSize} />
           Preview
           <input type="file" id="file" accept=".png" width={300} onChange={(e: any) => {
-            if (!e?.target?.files[0]) return;
+              if (!e?.target?.files[0]) return;
 
-            setPixelSize(1);
-            setLoadingMessage(true);
-            setDownloadName(e.target.files[0].name);
-            readImage(e.target.files[0], (imgSrc: any) => {
-              console.log(imgSrc);
-              setBlockedIndexes([]);
-              callBackChangeImage(imgSrc, setImage, setDynamicImgData, setlistOfColors, setLoadingMessage)
-            });
-          }}></input>
-          <div className={"App-download-containers"}>
-            <input value={downloadName} onChange={(e) => { setDownloadName(e.target.value) }}></input>
-            <button onClick={() => writeImageData(dynamicImgData, downloadName)}>Download</button>
+              setPixelSize(1);
+              setLoadingMessage(true);
+              setDownloadName(e.target.files[0].name);
+              readImage(e.target.files[0], (imgSrc: any) => {
+                setBlockedIndexes([]);
+                callBackChangeImage(imgSrc, setImage, setDynamicImgData, setlistOfColors, setLoadingMessage)
+              });
+            }}></input>
+            <div className={"App-download-containers"}>
+              <input value={downloadName} onChange={(e) => { setDownloadName(e.target.value) }}></input>
+              <button onClick={() => writeImageData(dynamicImgData, downloadName)}>Download</button>
+            </div>
           </div>
+
         </div>
         <div className={"App-colors-containers"}>
           <div className="App-pallete-container">
             <Pallete colorList={listOfColors} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} blockedIndexes={blockedIndexes} setBlockedIndexes={setBlockedIndexes} />
+            {windowSize <= 1024 && <div className="App-color-picker-container">
+              {(blockedIndexes as any).includes(selectedIndex) && (<div className="App-color-picker-mask">
+                <LockIcon />
+              </div>)}
+
+              <SketchPicker color={listOfColors[selectedIndex] ? convertColorToHex(listOfColors[selectedIndex]) : "#0000"} onChangeComplete={(color) => { handleChangeColorPicker(selectedIndex, color, listOfColors, dynamicImgData, setlistOfColors, setDynamicImgData) }} />
+
+            </div>}
             <RandomizeSection />
+            {windowSize <= 1024 && <ContactSection />}
           </div>
-          <div className="App-color-picker-container">
+          {windowSize > 1024 && <div className="App-color-picker-container">
             {(blockedIndexes as any).includes(selectedIndex) && (<div className="App-color-picker-mask">
               <LockIcon />
             </div>)}
 
             <SketchPicker color={listOfColors[selectedIndex] ? convertColorToHex(listOfColors[selectedIndex]) : "#0000"} onChangeComplete={(color) => { handleChangeColorPicker(selectedIndex, color, listOfColors, dynamicImgData, setlistOfColors, setDynamicImgData) }} />
-            <div className="App-contact-container">Hola</div>
-          </div>
+            <ContactSection />
+          </div>}
         </div>
       </div>
     </div >
