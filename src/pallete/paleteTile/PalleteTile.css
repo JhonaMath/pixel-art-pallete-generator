@@ -1,0 +1,54 @@
+.PalleteTile-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.PalleteTile-wrapper:hover > .PalleteTile-lockopenicon-container {
+  visibility: visible;
+}
+
+.PalleteTile-container {
+  width: 50px;
+  height: 50px;
+
+  margin-right: 15px;
+}
+
+.PalleteTile-lockopenicon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  visibility: hidden;
+  width: 50px;
+  height: 50px;
+
+  border-radius: 50% 0 0 50%;
+}
+
+.PalleteTile-lockopenicon-container:hover {
+  background-color: var(--primaryColor);
+}
+
+.PalleteTile-lockopenicon-container:active {
+  background-color: var(--primaryColorActive);
+}
+
+.PalleteTile-lockicon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 50px;
+  height: 50px;
+
+  border-radius: 50% 0 0 50%;
+}
+
+.PalleteTile-lockicon-container:hover {
+  background-color: var(--primaryColor);
+}
+
+.PalleteTile-lockicon-container:active {
+  background-color: var(--primaryColorActive);
+}

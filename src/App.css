@@ -1,3 +1,13 @@
+:root {
+  --primaryColor: #ffffff19;
+  --primaryColorHover: #ffffff19;
+  --primaryColorActive: #ffffff0d;
+}
+
+body {
+  width: 100%;
+}
+
 .App {
   text-align: center;
 }
@@ -7,25 +17,61 @@
   pointer-events: none;
 }
 
+.App-colors-containers {
+  display: flex;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
 }
 
-.App-header {
+.App-wrapper {
   background-color: #282c34;
   min-height: 100vh;
+
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  flex-direction: row;
+  /* align-items: center; */
+  /* justify-content: center; */
   font-size: calc(10px + 2vmin);
   color: white;
 }
 
 .App-link {
   color: #61dafb;
+}
+
+.App-preview-container {
+  max-height: 100vh;
+  width: 45%;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+}
+
+.App-pallete-container {
+  margin: 50px 0 0 100px;
+}
+
+.App-color-picker-container {
+  position: relative;
+  margin: 50px 0 0 20px;
+  height: fit-content;
+}
+
+.App-color-picker-mask {
+  cursor: not-allowed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background-color: #000000bb;
+  position: absolute;
+  color: #a9a9a9;
+  z-index: 1;
 }
 
 @keyframes App-logo-spin {
@@ -35,4 +81,46 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.App-randomize-container {
+  margin-top: 20px;
+  font-size: small;
+  background-color: var(--primaryColor);
+  border-radius: 10px;
+}
+
+.App-randomize-checkboxes-container {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  /* grid-template-rows: 50% 50%; */
+  align-content: center;
+}
+
+.App-randomize-button-container {
+  cursor: pointer;
+  margin-top: 10px;
+  padding: 5px;
+  border-top: 1px solid var(--primaryColor);
+  border-radius: 0 0 10px 10px;
+}
+
+.App-randomize-button-container:hover {
+  background-color: var(--primaryColor);
+}
+
+.App-randomize-button-container:active {
+  background-color: var(--primaryColorActive);
+}
+
+.App-download-containers {
+  display: flex;
+  margin-top: 10px;
+}
+
+.App-contact-container {
+  margin-top: 20px;
+  background-color: var(--primaryColor);
+  height: 250px;
+  border-radius: 10px;
 }
