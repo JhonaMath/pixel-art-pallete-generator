@@ -24,6 +24,8 @@ interface PalleteProps {
   blockedIndexes: number[];
   setBlockedIndexes: any;
 
+  hoveredColor?: Color;
+
 }
 
 function convertColorToHex(color: Color) {
@@ -37,6 +39,12 @@ function convertColorToHex(color: Color) {
 
 
   return `#${r}${g}${b}${a}`;
+}
+
+function compareColors(c1: Color, c2?: Color) {
+  if (c2 == undefined) return false;
+
+  return c1.a == c2.a && c1.b == c2.b && c1.g == c2.g && c1.r == c2.r;
 }
 
 function handleBlockIndex(index: number, blockedIndexes: number[], setBlockedList: any) {
@@ -68,6 +76,7 @@ function Pallete(props: PalleteProps) {
   content = colorList.map((c, i) => (<PalleteTile
     key={i}
     color={convertColorToHex(c)}
+    hovered={compareColors(c, props.hoveredColor)}
     selected={selectedIndex == i}
     blocked={blockedIndexes.includes(i)}
     onClick={() => setSelectedIndex(i)}

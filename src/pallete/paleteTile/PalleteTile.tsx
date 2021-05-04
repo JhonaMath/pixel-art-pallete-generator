@@ -9,6 +9,7 @@ interface PalleteTileProps {
   color: string;
   selected: boolean;
   blocked: boolean;
+  hovered: boolean;
 
   onBlockClick: () => void;
   onUnblockClick: () => void;
@@ -20,14 +21,15 @@ function PalleteTile(props: PalleteTileProps) {
 
   let content = null;
 
-  const { color, selected, blocked, onBlockClick, onUnblockClick } = props;
+  const { color, selected, blocked, onBlockClick, onUnblockClick, hovered } = props;
 
 
   return (
-    <div className={"PalleteTile-wrapper"} style={{ display: "flex" }}>
+    <div className={`PalleteTile-wrapper`} style={{ display: "flex" }}>
       {blocked ? <div className={"PalleteTile-lockicon-container"} onClick={() => onUnblockClick()}><LockIcon /></div> : <div className={"PalleteTile-lockopenicon-container"} onClick={onBlockClick}><LockOutlinedIcon /></div>}
-      <div className="PalleteTile-container" style={{ background: color, border: selected ? "2px solid white" : "2px solid " + color }} onClick={() => props.onClick()}></div>
-      {color}
+      <div className={`PalleteTile-container ${hovered ? "PalleteTile-hovered" : ""}`} style={{ background: color, border: selected ? "2px solid white" : "2px solid " + color, }} onClick={() => props.onClick()}>
+      </div>
+      {!hovered ? color : <b>{color}</b>}
     </div>
 
 

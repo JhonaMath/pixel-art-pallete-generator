@@ -14,6 +14,12 @@
   margin-right: 15px;
 }
 
+.PalleteTile-hovered {
+  transition: all 0.5s;
+  /* background-color: #0000ff44; */
+  border: 2px dotted white !important;
+}
+
 .PalleteTile-lockopenicon-container {
   display: flex;
   justify-content: center;

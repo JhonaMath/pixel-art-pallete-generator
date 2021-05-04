@@ -165,10 +165,12 @@ function App() {
 
 
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [hoveredIndex, setHoveredIndex] = useState(undefined);
+
   const [downloadName, setDownloadName] = useState("");
   const [blockedIndexes, setBlockedIndexes] = useState([]);
   const [loadingPercent, setLoadingPercent] = useState();
-  const [randomOptions, setRandomOptions] = useState({ h: true, s: true, l: true, a: false, allSameH: true });
+  const [randomOptions, setRandomOptions] = useState({ h: true, s: false, l: false, a: false, allSameH: true });
 
   const { image, setImage } = useImage();
 
@@ -188,14 +190,14 @@ function App() {
     return (<div className={"App-randomize-container"}  >
       <div style={{ fontSize: "20px", padding: "10px" }}>Randomize</div>
       <div className={"App-randomize-checkboxes-container"}>
-        <CheckBoxLabeled title={"same hue"} checked={randomOptions.allSameH} onClick={() => { setRandomOptions({ ...randomOptions, allSameH: !randomOptions.allSameH, }) }} />
+        <CheckBoxLabeled title={"Same hue 4 all"} checked={randomOptions.allSameH} onClick={() => { setRandomOptions({ ...randomOptions, allSameH: !randomOptions.allSameH, }) }} />
 
-        <CheckBoxLabeled title={"hue"} checked={randomOptions.h} onClick={() => { setRandomOptions({ ...randomOptions, h: !randomOptions.h, }) }} />
+        <CheckBoxLabeled title={"Hue"} checked={randomOptions.h} onClick={() => { setRandomOptions({ ...randomOptions, h: !randomOptions.h, }) }} />
 
-        <CheckBoxLabeled title={"saturation"} checked={randomOptions.s} onClick={() => { setRandomOptions({ ...randomOptions, s: !randomOptions.s, }) }} />
-        <CheckBoxLabeled title={"light"} checked={randomOptions.l} onClick={() => { setRandomOptions({ ...randomOptions, l: !randomOptions.l, }) }} />
+        <CheckBoxLabeled title={"Saturation"} checked={randomOptions.s} onClick={() => { setRandomOptions({ ...randomOptions, s: !randomOptions.s, }) }} />
+        <CheckBoxLabeled title={"Light"} checked={randomOptions.l} onClick={() => { setRandomOptions({ ...randomOptions, l: !randomOptions.l, }) }} />
 
-        <CheckBoxLabeled title={"alpha"} checked={randomOptions.a} onClick={() => { setRandomOptions({ ...randomOptions, a: !randomOptions.a, }) }} />
+        <CheckBoxLabeled title={"Alpha"} checked={randomOptions.a} onClick={() => { setRandomOptions({ ...randomOptions, a: !randomOptions.a, }) }} />
       </div>
       <div className={"App-randomize-button-container"} onClick={() => { RandomizeListOfColors(listOfColors, dynamicImgData, blockedIndexes, setlistOfColors, randomOptions) }}> <CasinoIcon /></div>
     </div>);
@@ -258,14 +260,13 @@ function App() {
         <div id="pocho" className="App-preview-container">
           <canvas id="canvas" width="800" height="800" hidden={true}></canvas>
           <div style={{ height: "80%" }}>
-            <PixelPerfect imageData={dynamicImgData} size={pixelSize} loading={loadingMessage} percent={loadingPercent} />
+            <PixelPerfect imageData={dynamicImgData} size={pixelSize} loading={loadingMessage} percent={loadingPercent} onHoverPixel={setHoveredIndex} />
           </div>
           <div className={"App-preview-input-container"}>
             <Slider onChange={(v) => { setPixelSize(v) }} min={1} max={50} value={pixelSize} />
           Preview
           <input type="file" id="file" accept=".png" width={300} onChange={(e: any) => {
               if (!e?.target?.files[0]) return;
-
               setPixelSize(1);
               setLoadingMessage(true);
               setDownloadName(e.target.files[0].name);
@@ -279,11 +280,10 @@ function App() {
               <button onClick={() => writeImageData(dynamicImgData, downloadName)}>Download</button>
             </div>
           </div>
-
         </div>
         <div className={"App-colors-containers"}>
           <div className="App-pallete-container">
-            <Pallete colorList={listOfColors} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} blockedIndexes={blockedIndexes} setBlockedIndexes={setBlockedIndexes} />
+            <Pallete colorList={listOfColors} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} blockedIndexes={blockedIndexes} hoveredColor={hoveredIndex} setBlockedIndexes={setBlockedIndexes} />
             {windowSize <= 1024 && <div className="App-color-picker-container">
               {(blockedIndexes as any).includes(selectedIndex) && (<div className="App-color-picker-mask">
                 <LockIcon />

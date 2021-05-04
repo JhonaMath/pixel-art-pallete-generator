@@ -48,6 +48,8 @@ interface PixelPerfectProps {
   size: number;
   loading: boolean;
   percent?: number;
+
+  onHoverPixel: (color: any) => void;
 }
 
 
@@ -61,7 +63,7 @@ function PixelPerfect(props: PixelPerfectProps) {
   const colorList = fromDataImageToColorsArr(imageData);
 
 
-  const content = colorList.map((c: any, index) => { return <div key={index} style={{ width: size, height: size, background: convertColorToHex(c) }} /> });
+  const content = colorList.map((c: any, index) => { return <div key={index} style={{ width: size, height: size, background: convertColorToHex(c) }} onMouseEnter={(e) => props.onHoverPixel(c)} onMouseLeave={(e) => props.onHoverPixel(undefined)} /> });
 
 
   return (!loading ?
