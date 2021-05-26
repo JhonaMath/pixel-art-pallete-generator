@@ -54,6 +54,8 @@ function PixelPerfect(props: PixelPerfectProps) {
 
   const { imageData, loading } = props;
 
+  if (!imageData || loading) return <div className={"PixelPerfect-loader-container"}> <Loader /></div>;
+
   const colorList = fromDataImageToColorsArr(imageData);
 
 

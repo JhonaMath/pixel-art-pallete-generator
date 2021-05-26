@@ -19,21 +19,6 @@ import { getImageData, getPalleteFromImageData, changeColorFromImageData, conver
 import { fromRGBToHSL } from './helpers/CanvasHelper';
 
 
-function useListOfColors(initialListOfColors = []): { listOfColors: Color[], setlistOfColors: any } {
-  const [listOfColors, setlistOfColors] = useState(initialListOfColors)
-  return { listOfColors, setlistOfColors }
-}
-
-function useOriginalImgData(initialListOfColors = []): { dynamicImgData: any, setDynamicImgData: any } {
-  const [dynamicImgData, setDynamicImgData] = useState(initialListOfColors);
-  return { dynamicImgData, setDynamicImgData }
-}
-
-function useImage(initialListOfColors = []): { image: any, setImage: any } {
-  const [image, setImage] = useState(initialListOfColors);
-  return { image, setImage }
-}
-
 function RandomizeListOfColors(listOfColors: any, imageData: any, listOfBlockedIndex: number[], setlistOfColors: any, randomOptions: any) {
   const { allSameH, h, s, l, a } = randomOptions;
 
@@ -113,7 +98,6 @@ async function callBackChangeImage(imageSrc: any, setImage: any, setDynamicImgDa
 
     const pallete = getPalleteFromImageData(dataImage);
 
-    setImage(imageObj);
     setDynamicImgData(dataImage);
     setlistOfColors(pallete);
     setLoading(false);
@@ -167,15 +151,18 @@ function App() {
   const [loadingPercent] = useState();
   const [randomOptions, setRandomOptions] = useState({ h: true, s: true, l: true, a: false, allSameH: true });
 
-  const { setImage } = useImage();
+
+  const [setImage] = useState();
+
 
   const [pixelSize, setPixelSize] = useState(25);
 
   const [loadingMessage, setLoadingMessage] = useState(false);
 
-  const { listOfColors, setlistOfColors } = useListOfColors();
+  const [listOfColors, setlistOfColors] = useState<Color[]>([])
 
-  const { dynamicImgData, setDynamicImgData } = useOriginalImgData();
+  const [dynamicImgData, setDynamicImgData] = useState<{ data: any, height: number, width: number }>();
+
 
   const initialCanvasSize = 150;
 
@@ -211,8 +198,6 @@ function App() {
 
     const imageObj = new Image();
     imageObj.src = dibujo;
-
-    setImage(imageObj);
 
     imageObj.onload = function () {
 
@@ -253,7 +238,7 @@ function App() {
         <div id="pocho" className="App-preview-container">
           <canvas id="canvas" width="800" height="800" hidden={true}></canvas>
           <div style={{ height: "80%" }}>
-            <PixelPerfect imageData={dynamicImgData} size={pixelSize} loading={loadingMessage} percent={loadingPercent} />
+            <PixelPerfect imageData={dynamicImgData!} size={pixelSize} loading={loadingMessage} percent={loadingPercent} />
           </div>
           <div className={"App-preview-input-container"}>
             <Slider onChange={(v) => { setPixelSize(v) }} min={1} max={50} value={pixelSize} />
