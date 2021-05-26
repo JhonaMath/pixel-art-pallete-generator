@@ -1,5 +1,6 @@
 {
   "name": "pixel-pallete-generator",
+  "homepage": "https://jhonamath.github.io/pixel-art-pallete-generator/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
