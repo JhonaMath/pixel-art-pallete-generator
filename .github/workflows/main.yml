@@ -21,13 +21,6 @@ jobs:
         run: |
           npm i -g npm@6
           npm i
-      - name: Create env file
-        run: node cli create env-file -p
-        env:
-          PUBLIC_URL: https://jhonamath.github.io/pixel-art-pallete-generator/
-
-      - name: Generate files
-        run: node cli generate-files
 
       - name: No changes to commit
         run: |
