@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { Color } from '../pallete/Pallete';
 import "./PixelPerfect.css";
 import Loader from '../loader/Loader';
@@ -32,8 +32,6 @@ function fromDataImageToColorsArr(dataImage: DataImage) {
 
 function convertColorToHex(color: Color) {
 
-  const number = color.r * 16 * 16 + color.g * 16 + color.b;
-
   const r = color.r.toString(16).padStart(2, "0");
   const g = color.g.toString(16).padStart(2, "0");
   const b = color.b.toString(16).padStart(2, "0");
@@ -53,8 +51,6 @@ interface PixelPerfectProps {
 
 function PixelPerfect(props: PixelPerfectProps) {
   const size = props.size + "px";
-
-  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const { imageData, loading } = props;
 

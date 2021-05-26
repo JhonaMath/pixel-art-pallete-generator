@@ -1,6 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
 import LockIcon from '@material-ui/icons/Lock';
-// import LockOpenIcon from '@material-ui/icons/LockOpen';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 
 import "./PalleteTile.css";
@@ -17,8 +15,6 @@ interface PalleteTileProps {
 
 
 function PalleteTile(props: PalleteTileProps) {
-
-  let content = null;
 
   const { color, selected, blocked, onBlockClick, onUnblockClick } = props;
 

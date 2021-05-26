@@ -1,14 +1,6 @@
 import { Color, ColorHSL } from "../pallete/Pallete";
 import { saveAs } from 'file-saver';
 
-interface GenerateRandomColorOptions {
-    lock_a?: boolean;
-    lock_h?: boolean;
-    lock_s?: boolean;
-    lock_l?: boolean;
-
-}
-
 export function generateRandomColor(): Color {
     const color: Color = { r: 0, b: 0, g: 0, a: 0 };
 
@@ -67,7 +59,7 @@ export function getPalleteFromImageData(dataImage: any): Color[] {
 
         const sumRGBA = color.a + color.b + color.g + color.r;
         if (sumRGBA > 0) {
-            const existInList = auxList.find((v) => color.r == v.r && color.b == v.b && color.g == v.g && color.a == v.a);
+            const existInList = auxList.find((v) => color.r === v.r && color.b === v.b && color.g === v.g && color.a === v.a);
 
             if (!existInList) auxList.push(color);
         }
@@ -81,10 +73,10 @@ export function changeColorFromImageData(oldColor: Color, newColor: Color, dataI
     const numPixels = dataImage.width * dataImage.height;
 
     for (let i = 0; (i) < numPixels; i++) {
-        const c1 = dataImage.data[i * 4] == oldColor.r;
-        const c2 = dataImage.data[i * 4 + 1] == oldColor.g;
-        const c3 = dataImage.data[i * 4 + 2] == oldColor.b;
-        const c4 = dataImage.data[i * 4 + 3] == oldColor.a;
+        const c1 = dataImage.data[i * 4] === oldColor.r;
+        const c2 = dataImage.data[i * 4 + 1] === oldColor.g;
+        const c3 = dataImage.data[i * 4 + 2] === oldColor.b;
+        const c4 = dataImage.data[i * 4 + 3] === oldColor.a;
 
         if (c1 && c2 && c3 && c4) {
             dataImage.data[i * 4] = newColor.r;
@@ -144,9 +136,6 @@ export function writeImageData(imageData: any, name: string) {
 
 export function convertColorToHex(color: Color) {
 
-
-    const number = color.r * 16 * 16 + color.g * 16 + color.b;
-
     const r = color.r.toString(16).padStart(2, "0");
     const g = color.g.toString(16).padStart(2, "0");
     const b = color.b.toString(16).padStart(2, "0");
@@ -170,7 +159,6 @@ export function fromRGBToHSL(rgbColor: Color): ColorHSL {
 
     const hsl = rgbToHsl(rgbColor.r, rgbColor.g, rgbColor.b);
 
-    hsl[0] = (hsl[0]);
     hsl[1] = (parseFloat(hsl[1].replace("%", "")));
     hsl[2] = (parseFloat(hsl[2].replace("%", "")));
 

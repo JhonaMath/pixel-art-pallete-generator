@@ -1,11 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import Slider, { Range } from 'rc-slider';
+import Slider from 'rc-slider';
 import { SketchPicker } from 'react-color';
 import 'rc-slider/assets/index.css';
 import Checkbox from '@material-ui/core/Checkbox';
 import CasinoIcon from '@material-ui/icons/Casino';
-import logo from './logo.svg';
 import './App.css';
 import LockIcon from '@material-ui/icons/Lock';
 import GitHubIcon from '@material-ui/icons/GitHub';
@@ -16,8 +15,7 @@ import MailIcon from '@material-ui/icons/Mail';
 import dibujo from './logo.png';
 import Pallete, { Color } from './pallete/Pallete';
 import PixelPerfect from './pixelPerfectDiv/PixelPerfect';
-import { getImageData, getPalleteFromImageData, changeColorFromImageData, convertImageDataToImage, generateRandomColor, readImage, convertColorToHex, writeImageData, generateRandomColorHSL, fromHSLToRGB } from './helpers/CanvasHelper';
-import Loader from './loader/Loader';
+import { getImageData, getPalleteFromImageData, changeColorFromImageData, convertImageDataToImage, readImage, convertColorToHex, writeImageData, generateRandomColorHSL, fromHSLToRGB } from './helpers/CanvasHelper';
 import { fromRGBToHSL } from './helpers/CanvasHelper';
 
 
@@ -78,7 +76,7 @@ function handleChangeColorPicker(selectedIndex: any, newColor: any, listOfColors
   const auxList: Color[] = [];
 
   listOfColors.forEach((c: Color, index: any) => {
-    if (index == selectedIndex) {
+    if (index === selectedIndex) {
       const newColorAux = newColor.rgb;
 
       newColorAux.a = Math.floor(newColorAux.a * 255);
@@ -100,7 +98,6 @@ async function callBackChangeImage(imageSrc: any, setImage: any, setDynamicImgDa
 
   const canvas: any = document.getElementById('canvas');
 
-  const context = (canvas as any).getContext('2d');
 
   const imageObj = new Image();
   imageObj.src = imageSrc;
@@ -142,7 +139,7 @@ function CheckBoxLabeled(props: { title: string, checked: boolean, onClick: any 
 
 
 function TagA(props: any) {
-  return <a href={props.href} target="_blank" className={"Button-container"} onClick={props.onClick}>{props.children} <div className={"tooltiptext"}>{props.toolTipText}</div></a>
+  return <a href={props.href} target="_blank" rel="noreferrer" className={"Button-container"} onClick={props.onClick}>{props.children} <div className={"tooltiptext"}>{props.toolTipText}</div></a>
 }
 
 function ContactSection() {
@@ -167,10 +164,10 @@ function App() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [downloadName, setDownloadName] = useState("");
   const [blockedIndexes, setBlockedIndexes] = useState([]);
-  const [loadingPercent, setLoadingPercent] = useState();
+  const [loadingPercent] = useState();
   const [randomOptions, setRandomOptions] = useState({ h: true, s: true, l: true, a: false, allSameH: true });
 
-  const { image, setImage } = useImage();
+  const { setImage } = useImage();
 
   const [pixelSize, setPixelSize] = useState(25);
 
@@ -179,8 +176,6 @@ function App() {
   const { listOfColors, setlistOfColors } = useListOfColors();
 
   const { dynamicImgData, setDynamicImgData } = useOriginalImgData();
-
-  const auxList: Color[] = [];
 
   const initialCanvasSize = 150;
 

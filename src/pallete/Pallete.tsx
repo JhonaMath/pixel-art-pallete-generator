@@ -1,4 +1,3 @@
-import React, { useState, useRef, useEffect } from 'react';
 import PalleteTile from './paleteTile/PalleteTile';
 import "./Pallete.css";
 
@@ -28,8 +27,6 @@ interface PalleteProps {
 
 function convertColorToHex(color: Color) {
 
-  const number = color.r * 16 * 16 + color.g * 16 + color.b;
-
   const r = color.r.toString(16).padStart(2, "0");
   const g = color.g.toString(16).padStart(2, "0");
   const b = color.b.toString(16).padStart(2, "0");
@@ -51,7 +48,7 @@ function handleBlockIndex(index: number, blockedIndexes: number[], setBlockedLis
 function handleUnBlockIndex(index: number, blockedIndexes: number[], setBlockedList: any) {
   const aux = blockedIndexes.filter(() => true);
 
-  const findIndex = aux.findIndex((v) => v == index);
+  const findIndex = aux.findIndex((v) => v === index);
   aux.splice(findIndex, 1);
 
 
@@ -68,7 +65,7 @@ function Pallete(props: PalleteProps) {
   content = colorList.map((c, i) => (<PalleteTile
     key={i}
     color={convertColorToHex(c)}
-    selected={selectedIndex == i}
+    selected={selectedIndex === i}
     blocked={blockedIndexes.includes(i)}
     onClick={() => setSelectedIndex(i)}
     onBlockClick={() => { handleBlockIndex(i, blockedIndexes, setBlockedIndexes) }}
