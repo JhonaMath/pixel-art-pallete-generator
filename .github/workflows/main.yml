@@ -29,9 +29,6 @@ jobs:
       - name: TypeScript check
         run: npx tsc
 
-      - name: ESLint check
-        run: npm run lint
-
       - name: Tests
         run: npm test
 
