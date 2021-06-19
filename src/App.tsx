@@ -124,15 +124,19 @@ function TagA(props: any) {
 
 function ContactSection() {
   return (<div className={"App-contact-container "}>
-    <TagA href={"https://github.com/JhonaMath/pixel-art-pallete-generator"} toolTipText={"Code!"}>
-      <GitHubIcon fontSize="large" />
-    </TagA>
-    <TagA href={"https://o-lobster.itch.io/simple-dungeon-crawler-16x16-pixel-pack"} toolTipText={"Asset"}>
-      <VideogameAssetIcon fontSize="large" />
-    </TagA>
-    <TagA href={"mailto:jhonathan.barreiro@gmail.com"} toolTipText={"Contact! :)"}>
-      <MailIcon fontSize="large" />
-    </TagA>
+    <div className={"App-contact-container-buttons "} >
+      <TagA href={"https://github.com/JhonaMath/pixel-art-pallete-generator"} toolTipText={"Code!"}>
+        <GitHubIcon fontSize="large" />
+      </TagA>
+      <TagA href={"https://o-lobster.itch.io/simple-dungeon-crawler-16x16-pixel-pack"} toolTipText={"Asset"}>
+        <VideogameAssetIcon fontSize="large" />
+      </TagA>
+      <TagA href={"mailto:jhonathan.barreiro@gmail.com"} toolTipText={"Contact! :)"}>
+        <MailIcon fontSize="large" />
+      </TagA>
+    </div>
+    <div className={"App-contact-version"}>v 0.1.1 </div>
+
   </div>)
 }
 

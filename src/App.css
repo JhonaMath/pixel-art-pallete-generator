@@ -121,6 +121,7 @@ body {
 
 .App-contact-container {
   display: flex;
+  flex-direction: column;
   margin-top: 20px;
   background-color: var(--primaryColor);
   align-items: center;
@@ -128,6 +129,19 @@ body {
   /* height: 250px; */
   border-radius: 10px;
 }
+
+.App-contact-container-buttons {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+}
+
+.App-contact-version {
+  font-size: small;
+  margin-bottom: 10px;
+}
+
 .Button-container {
   color: white !important;
   cursor: pointer;
