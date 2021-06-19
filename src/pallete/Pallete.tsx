@@ -1,4 +1,8 @@
+
+import { FixedSizeList } from 'react-window';
+import { ColorPos } from '../App';
 import PalleteTile from './paleteTile/PalleteTile';
+
 import "./Pallete.css";
 
 export interface Color {
@@ -16,7 +20,7 @@ export interface ColorHSL {
 }
 
 interface PalleteProps {
-  colorList: Color[];
+  colorList: ColorPos[];
   selectedIndex: number;
   setSelectedIndex: any;
 
@@ -55,16 +59,19 @@ function handleUnBlockIndex(index: number, blockedIndexes: number[], setBlockedL
   setBlockedList(aux);
 }
 
-
 function Pallete(props: PalleteProps) {
-  let content = null;
+  let content: any = null;
 
   const { colorList, selectedIndex, setSelectedIndex, blockedIndexes, setBlockedIndexes } = props;
 
+  const Row = ({ index, style }: any) => (
+
+    < div style={style} > {content[index]}</div>
+  );
 
   content = colorList.map((c, i) => (<PalleteTile
     key={i}
-    color={convertColorToHex(c)}
+    color={convertColorToHex(c.color)}
     selected={selectedIndex === i}
     blocked={blockedIndexes.includes(i)}
     onClick={() => setSelectedIndex(i)}
@@ -75,8 +82,15 @@ function Pallete(props: PalleteProps) {
   return (
     <div className={"Pallete-wrapper"}>
       <div className={"Pallete-title"}>Pallete</div>
-      <div className={"Pallete-container"}>{content}</div>
-    </div>
+      <FixedSizeList
+        className="Pallete-container"
+        height={300}
+        width={200}
+        itemSize={54}
+        itemCount={content.length} >
+        {Row}
+      </FixedSizeList>
+    </div >
   );
 }
 

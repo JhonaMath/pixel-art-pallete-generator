@@ -1,4 +1,5 @@
 import { Color, ColorHSL } from "../pallete/Pallete";
+import { ColorPos } from "../App";
 import { saveAs } from 'file-saver';
 
 export function generateRandomColor(): Color {
@@ -48,6 +49,8 @@ export function getPalleteFromImageData(dataImage: any): Color[] {
 
     const numPixels = dataImage.width * dataImage.height;
 
+    let lastSum = -1;
+
     for (let i = 0; (i) < numPixels; i++) {
 
         const color = {
@@ -58,14 +61,63 @@ export function getPalleteFromImageData(dataImage: any): Color[] {
         }
 
         const sumRGBA = color.a + color.b + color.g + color.r;
-        if (sumRGBA > 0) {
+        if (lastSum !== sumRGBA && sumRGBA > 0) {
+
             const existInList = auxList.find((v) => color.r === v.r && color.b === v.b && color.g === v.g && color.a === v.a);
 
+            lastSum = sumRGBA;
             if (!existInList) auxList.push(color);
+
         }
+
     }
 
     return auxList;
+}
+
+export function getPalleteWithPosFromImageData(dataImage: any): ColorPos[] {
+
+    let percent = 0;
+    const mapOfColorPos = new Map<number, ColorPos>();
+    const auxList: Color[] = [];
+
+    const numPixels = dataImage.width * dataImage.height;
+
+    let lastSum = -1;
+
+    const valueToIncrementPer = Math.floor(numPixels / 100);
+
+
+    for (let i = 0; (i) < numPixels; i++) {
+
+        const color = {
+            r: dataImage.data[i * 4],
+            g: dataImage.data[i * 4 + 1],
+            b: dataImage.data[i * 4 + 2],
+            a: dataImage.data[i * 4 + 3],
+        }
+
+        const sumRGBA = color.a + color.b * 256 + color.g * 256 * 256 + color.r * 256 * 256 * 256;
+        if (sumRGBA > 0) {
+            const value = mapOfColorPos.get(sumRGBA);
+
+            if (value !== undefined) {
+                //Puede que necesite un set
+                value.positions.push(i);
+            } else {
+                mapOfColorPos.set(sumRGBA, { color: color, positions: [i] });
+                auxList.push(color);
+            }
+        }
+    }
+
+    const result = auxList.map((c) => {
+        const sum = c.a + c.b * 256 + c.g * 256 * 256 + c.r * 256 * 256 * 256;
+
+        return mapOfColorPos.get(sum)!;
+    });
+
+    return result;
 }
 
 export function changeColorFromImageData(oldColor: Color, newColor: Color, dataImage: any) {
@@ -89,7 +141,44 @@ export function changeColorFromImageData(oldColor: Color, newColor: Color, dataI
     return dataImage;
 }
 
-export function convertImageDataToImage(imageData: any, canvas: any) {
+export function changeColorPosFromImageData(oldColor: ColorPos, newColor: Color, dataImage: any) {
+
+    const numPixels = dataImage.width * dataImage.height;
+
+    for (let i = 0; i < oldColor.positions.length; i++) {
+        const pos = oldColor.positions[i];
+
+        dataImage.data[pos * 4] = newColor.r;
+        dataImage.data[pos * 4 + 1] = newColor.g;
+        dataImage.data[pos * 4 + 2] = newColor.b;
+        dataImage.data[pos * 4 + 3] = newColor.a;
+
+    }
+
+    // for (let i = 0; (i) < numPixels; i++) {
+    //     const c1 = dataImage.data[i * 4] === oldColor.r;
+    //     const c2 = dataImage.data[i * 4 + 1] === oldColor.g;
+    //     const c3 = dataImage.data[i * 4 + 2] === oldColor.b;
+    //     const c4 = dataImage.data[i * 4 + 3] === oldColor.a;
+
+    //     if (c1 && c2 && c3 && c4) {
+    //         dataImage.data[i * 4] = newColor.r;
+    //         dataImage.data[i * 4 + 1] = newColor.g;
+    //         dataImage.data[i * 4 + 2] = newColor.b;
+    //         dataImage.data[i * 4 + 3] = newColor.a;
+    //     }
+    // }
+
+    return dataImage;
+}
+
+
+export function convertImageDataToImage(imageData: any, canvasIn?: any) {
+
+    let canvas: any = document.createElement("CANVAS");
+
+    if (canvasIn) canvas = canvasIn;
+    else canvas = document.createElement("CANVAS");
 
     const context = (canvas as any).getContext('2d');
 

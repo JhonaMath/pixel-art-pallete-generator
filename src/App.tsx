@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { useState, useEffect } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Slider from 'rc-slider';
@@ -15,21 +16,27 @@ import MailIcon from '@material-ui/icons/Mail';
 import dibujo from './logo.png';
 import Pallete, { Color } from './pallete/Pallete';
 import PixelPerfect from './pixelPerfectDiv/PixelPerfect';
-import { getImageData, getPalleteFromImageData, changeColorFromImageData, convertImageDataToImage, readImage, convertColorToHex, writeImageData, generateRandomColorHSL, fromHSLToRGB } from './helpers/CanvasHelper';
+import { getImageData, getPalleteFromImageData, changeColorFromImageData, convertImageDataToImage, readImage, convertColorToHex, writeImageData, generateRandomColorHSL, fromHSLToRGB, getPalleteWithPosFromImageData, changeColorPosFromImageData } from './helpers/CanvasHelper';
 import { fromRGBToHSL } from './helpers/CanvasHelper';
 
+export interface ColorPos {
+  color: Color;
+  positions: number[]
+}
 
 function RandomizeListOfColors(listOfColors: any, imageData: any, listOfBlockedIndex: number[], setlistOfColors: any, randomOptions: any) {
   const { allSameH, h, s, l, a } = randomOptions;
 
-  const auxList: Color[] = [];
+  const auxList: ColorPos[] = [];
 
   const uniqueHslColor = generateRandomColorHSL();
 
-  listOfColors.forEach((c: Color, index: number) => {
+  let newImageData = imageData;
+
+  listOfColors.forEach((c: ColorPos, index: number) => {
     if (!listOfBlockedIndex.includes(index)) {
 
-      const colorHSL = fromRGBToHSL(c);
+      const colorHSL = fromRGBToHSL(c.color);
 
       const newHslColor = generateRandomColorHSL();
 
@@ -42,44 +49,39 @@ function RandomizeListOfColors(listOfColors: any, imageData: any, listOfBlockedI
 
       if (!a) newHslColor.a = colorHSL.a;
 
-
       const newColor = fromHSLToRGB(newHslColor);
 
-      changeColorFromImageData(c, newColor, imageData);
+      newImageData = changeColorPosFromImageData(c, newColor, newImageData);
 
-      auxList.push(newColor);
+      // newImageData = changeColorFromImageData(c, newColor, newImageData);
+
+      c.color = newColor;
+      auxList.push(c);
     } else {
       auxList.push(c);
     }
   });
 
-  setlistOfColors(auxList);
+  setlistOfColors(auxList, _.cloneDeep(newImageData));
 
 }
 
-function handleChangeColorPicker(selectedIndex: any, newColor: any, listOfColors: any, imageData: any, setlistOfColors: any, setImageData: any) {
-  const auxList: Color[] = [];
+function handleChangeColorPicker(selectedIndex: any, newColor: any, listOfColors: any, imageData: any, setlistOfColors: any) {
 
-  listOfColors.forEach((c: Color, index: any) => {
-    if (index === selectedIndex) {
-      const newColorAux = newColor.rgb;
+  let newImageData = imageData;
 
-      newColorAux.a = Math.floor(newColorAux.a * 255);
+  const newColorAux = newColor.rgb;
+  newColorAux.a = Math.floor(newColorAux.a * 255);
 
-      changeColorFromImageData(c, newColorAux, imageData);
+  newImageData = changeColorPosFromImageData(listOfColors[selectedIndex], newColorAux, newImageData);
 
-      auxList.push(newColorAux);
-    } else {
-      auxList.push(c);
-    }
+  listOfColors[selectedIndex].color = newColorAux;
 
-  });
-
-  setlistOfColors(auxList);
+  setlistOfColors(listOfColors, newImageData);
 
 }
 
-async function callBackChangeImage(imageSrc: any, setImage: any, setDynamicImgData: any, setlistOfColors: any, setLoading: any) {
+async function callBackChangeImage(imageSrc: any, prevState: any, setState: any,) {
 
   const canvas: any = document.getElementById('canvas');
 
@@ -88,19 +90,13 @@ async function callBackChangeImage(imageSrc: any, setImage: any, setDynamicImgDa
   imageObj.src = imageSrc;
 
   imageObj.onload = function () {
-
     const dataImage = getImageData(imageObj, canvas);
 
-    if (dataImage.width * dataImage.height > 40000) {
-      alert("This image is too long.");
-      return;
-    }
-
     const pallete = getPalleteFromImageData(dataImage);
+    const palletePos = getPalleteWithPosFromImageData(dataImage);
 
-    setDynamicImgData(dataImage);
-    setlistOfColors(pallete);
-    setLoading(false);
+
+    setState({ ...prevState, dynamicImgData: dataImage, listOfColors: pallete, loadingMessage: false, listOfColorsPos: palletePos })
   }
 
 }
@@ -142,27 +138,20 @@ function ContactSection() {
 
 function App() {
 
-  const [windowSize, setWindowSize] = useState(0);
+  const [state, setState] = useState({
+    windowSize: 0,
+    selectedIndex: 0,
+    downloadName: "",
+    blockedIndexes: [] as number[],
+    pixelSize: 25,
+    loadingMessage: false,
+    loadingPercent: 0,
+    listOfColorsPos: [] as ColorPos[],
+    dynamicImgData: undefined as any,
+    randomOptions: { h: true, s: true, l: true, a: false, allSameH: true }
+  });
 
-
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [downloadName, setDownloadName] = useState("");
-  const [blockedIndexes, setBlockedIndexes] = useState([]);
-  const [loadingPercent] = useState();
-  const [randomOptions, setRandomOptions] = useState({ h: true, s: true, l: true, a: false, allSameH: true });
-
-
-  const [setImage] = useState();
-
-
-  const [pixelSize, setPixelSize] = useState(25);
-
-  const [loadingMessage, setLoadingMessage] = useState(false);
-
-  const [listOfColors, setlistOfColors] = useState<Color[]>([])
-
-  const [dynamicImgData, setDynamicImgData] = useState<{ data: any, height: number, width: number }>();
-
+  const { windowSize, selectedIndex, downloadName, blockedIndexes, pixelSize, loadingMessage, listOfColorsPos, dynamicImgData, randomOptions } = state;
 
   const initialCanvasSize = 150;
 
@@ -170,16 +159,16 @@ function App() {
     return (<div className={"App-randomize-container"}  >
       <div style={{ fontSize: "20px", padding: "10px" }}>Randomize</div>
       <div className={"App-randomize-checkboxes-container"}>
-        <CheckBoxLabeled title={"same hue"} checked={randomOptions.allSameH} onClick={() => { setRandomOptions({ ...randomOptions, allSameH: !randomOptions.allSameH, }) }} />
+        <CheckBoxLabeled title={"same hue"} checked={randomOptions.allSameH} onClick={() => { setState({ ...state, randomOptions: { ...randomOptions, allSameH: !randomOptions.allSameH, } }) }} />
 
-        <CheckBoxLabeled title={"hue"} checked={randomOptions.h} onClick={() => { setRandomOptions({ ...randomOptions, h: !randomOptions.h, }) }} />
+        <CheckBoxLabeled title={"hue"} checked={randomOptions.h} onClick={() => { setState({ ...state, randomOptions: { ...randomOptions, h: !randomOptions.h, } }) }} />
 
-        <CheckBoxLabeled title={"saturation"} checked={randomOptions.s} onClick={() => { setRandomOptions({ ...randomOptions, s: !randomOptions.s, }) }} />
-        <CheckBoxLabeled title={"light"} checked={randomOptions.l} onClick={() => { setRandomOptions({ ...randomOptions, l: !randomOptions.l, }) }} />
+        <CheckBoxLabeled title={"saturation"} checked={randomOptions.s} onClick={() => { setState({ ...state, randomOptions: { ...randomOptions, s: !randomOptions.s, } }) }} />
+        <CheckBoxLabeled title={"light"} checked={randomOptions.l} onClick={() => { setState({ ...state, randomOptions: { ...randomOptions, l: !randomOptions.l, } }) }} />
 
-        <CheckBoxLabeled title={"alpha"} checked={randomOptions.a} onClick={() => { setRandomOptions({ ...randomOptions, a: !randomOptions.a, }) }} />
+        <CheckBoxLabeled title={"alpha"} checked={randomOptions.a} onClick={() => { setState({ ...state, randomOptions: { ...randomOptions, a: !randomOptions.a, } }) }} />
       </div>
-      <div className={"App-randomize-button-container"} onClick={() => { RandomizeListOfColors(listOfColors, dynamicImgData, blockedIndexes, setlistOfColors, randomOptions) }}> <CasinoIcon /></div>
+      <div className={"App-randomize-button-container"} onClick={() => { RandomizeListOfColors(listOfColorsPos, dynamicImgData, blockedIndexes, (lc: ColorPos[]) => setState({ ...state, listOfColorsPos: lc }), randomOptions) }}> <CasinoIcon /></div>
     </div>);
   }
 
@@ -187,10 +176,10 @@ function App() {
   useEffect(() => {
 
     document.addEventListener("resize", () => {
-      setWindowSize(window.innerWidth);
+      setState({ ...state, windowSize: window.innerWidth });
     });
 
-    setWindowSize(window.innerWidth);
+    setState({ ...state, windowSize: window.innerWidth });
 
     const canvas: any = document.getElementById('canvas');
 
@@ -203,12 +192,6 @@ function App() {
 
       var scale = window.devicePixelRatio;
       const dataImage = getImageData(imageObj, canvas);
-
-      setDynamicImgData(dataImage);
-
-      const pallete = getPalleteFromImageData(dataImage);
-
-      setlistOfColors(pallete);
 
       let newImageData = dataImage;
 
@@ -224,9 +207,9 @@ function App() {
 
       context.drawImage(newImage, 0, 0);
 
-      const pallete2 = getPalleteFromImageData(newImageData);
+      const palletePos = getPalleteWithPosFromImageData(newImageData);
 
-      setlistOfColors(pallete2);
+      setState({ ...state, dynamicImgData: dataImage, windowSize: window.innerWidth, listOfColorsPos: palletePos });
 
     }
 
@@ -238,24 +221,20 @@ function App() {
         <div id="pocho" className="App-preview-container">
           <canvas id="canvas" width="800" height="800" hidden={true}></canvas>
           <div style={{ height: "80%" }}>
-            <PixelPerfect imageData={dynamicImgData!} size={pixelSize} loading={loadingMessage} percent={loadingPercent} />
+            <PixelPerfect imageData={dynamicImgData!} size={pixelSize} loading={loadingMessage} percent={0} />
           </div>
           <div className={"App-preview-input-container"}>
-            <Slider onChange={(v) => { setPixelSize(v) }} min={1} max={50} value={pixelSize} />
+            <Slider onChange={(v) => { setState({ ...state, pixelSize: v }); }} min={1} max={50} value={pixelSize} />
           Preview
           <input type="file" id="file" accept=".png" width={300} onChange={(e: any) => {
               if (!e?.target?.files[0]) return;
-
-              setPixelSize(1);
-              setLoadingMessage(true);
-              setDownloadName(e.target.files[0].name);
+              setState({ ...state, downloadName: e.target.files[0].name, loadingMessage: true, pixelSize: 1, blockedIndexes: [] });
               readImage(e.target.files[0], (imgSrc: any) => {
-                setBlockedIndexes([]);
-                callBackChangeImage(imgSrc, setImage, setDynamicImgData, setlistOfColors, setLoadingMessage)
+                callBackChangeImage(imgSrc, state, setState)
               });
             }}></input>
             <div className={"App-download-containers"}>
-              <input value={downloadName} onChange={(e) => { setDownloadName(e.target.value) }}></input>
+              <input value={downloadName} onChange={(e) => { setState({ ...state, downloadName: e.target.value }) }}></input>
               <button onClick={() => writeImageData(dynamicImgData, downloadName)}>Download</button>
             </div>
           </div>
@@ -263,13 +242,18 @@ function App() {
         </div>
         <div className={"App-colors-containers"}>
           <div className="App-pallete-container">
-            <Pallete colorList={listOfColors} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} blockedIndexes={blockedIndexes} setBlockedIndexes={setBlockedIndexes} />
+            <Pallete colorList={listOfColorsPos} selectedIndex={selectedIndex} setSelectedIndex={(i: number) => setState({ ...state, selectedIndex: i })} blockedIndexes={blockedIndexes} setBlockedIndexes={(i: number[]) => setState({ ...state, blockedIndexes: i })} />
             {windowSize <= 1024 && <div className="App-color-picker-container">
               {(blockedIndexes as any).includes(selectedIndex) && (<div className="App-color-picker-mask">
                 <LockIcon />
               </div>)}
 
-              <SketchPicker color={listOfColors[selectedIndex] ? convertColorToHex(listOfColors[selectedIndex]) : "#0000"} onChangeComplete={(color) => { handleChangeColorPicker(selectedIndex, color, listOfColors, dynamicImgData, setlistOfColors, setDynamicImgData) }} />
+              <SketchPicker color={listOfColorsPos[selectedIndex] ? convertColorToHex(listOfColorsPos[selectedIndex].color) : "#0000"} onChangeComplete={(color) => {
+                handleChangeColorPicker(selectedIndex, color, listOfColorsPos, dynamicImgData,
+                  (lc: ColorPos[], newData: any) => {
+                    setState({ ...state, dynamicImgData: newData, listOfColorsPos: lc })
+                  })
+              }} />
 
             </div>}
             <RandomizeSection />
@@ -280,7 +264,7 @@ function App() {
               <LockIcon />
             </div>)}
 
-            <SketchPicker color={listOfColors[selectedIndex] ? convertColorToHex(listOfColors[selectedIndex]) : "#0000"} onChangeComplete={(color) => { handleChangeColorPicker(selectedIndex, color, listOfColors, dynamicImgData, setlistOfColors, setDynamicImgData) }} />
+            <SketchPicker color={listOfColorsPos[selectedIndex] ? convertColorToHex(listOfColorsPos[selectedIndex].color) : "#0000"} onChangeComplete={(color) => { handleChangeColorPicker(selectedIndex, color, listOfColorsPos, dynamicImgData, (lc: ColorPos[], newData: any) => setState({ ...state, dynamicImgData: newData, listOfColorsPos: lc })) }} />
             <ContactSection />
           </div>}
         </div>

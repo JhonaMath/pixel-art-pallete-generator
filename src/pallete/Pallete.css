@@ -1,5 +1,5 @@
 .Pallete-wrapper {
-  max-height: 60%;
+  /* max-height: 60%; */
 }
 
 .Pallete-title {
@@ -18,4 +18,8 @@
   padding: 0px 30px 30px 20px;
   max-height: 400px;
   overflow: auto;
+}
+
+.Pallete-container > div {
+  flex-shrink: 0;
 }

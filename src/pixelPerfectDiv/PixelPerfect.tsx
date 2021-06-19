@@ -2,6 +2,7 @@ import React from 'react';
 import { Color } from '../pallete/Pallete';
 import "./PixelPerfect.css";
 import Loader from '../loader/Loader';
+import { convertImageDataToImage } from '../helpers/CanvasHelper';
 
 
 interface DataImage {
@@ -48,29 +49,30 @@ interface PixelPerfectProps {
   percent?: number;
 }
 
+let cacheImageData: any = undefined;
+let imageSrcCache: any = undefined;
 
 function PixelPerfect(props: PixelPerfectProps) {
   const size = props.size + "px";
 
-  const { imageData, loading } = props;
+  const { imageData, loading, percent } = props;
 
-  if (!imageData || loading) return <div className={"PixelPerfect-loader-container"}> <Loader /></div>;
-
-  const colorList = fromDataImageToColorsArr(imageData);
+  if (!imageData || loading) return <div className={"PixelPerfect-loader-container"}> <Loader percent={props.percent} /></div>;
 
 
-  const content = colorList.map((c: any, index) => { return <div key={index} style={{ width: size, height: size, background: convertColorToHex(c) }} /> });
+  let imageSrc;
 
+  imageSrc = (convertImageDataToImage(imageData, undefined) as any).src
+
+  const content = <img width={props.size * imageData.width} className={"PixelPerfect-container-img"} style={{ imageRendering: "pixelated" }} src={imageSrc} />
 
   return (!loading ?
-    <div className={"PixelPerfect-container"} style={{
-      gridTemplateColumns: `repeat(${imageData.width}, ${size})`,
-      gridTemplateRows: `repeat(${imageData.width}, ${size})`
-    }}>
+    <div className={"PixelPerfect-container"}>
       {content}
     </div > :
-
-    <div className={"PixelPerfect-loader-container"}> <Loader /></div>
+    // <div className={"PixelPerfect-loader-container"}> <Loader percent={props.percent} /></div>
+    // :
+    <div className={"PixelPerfect-loader-container"}> <Loader percent={percent} /></div>
   );
 }
 

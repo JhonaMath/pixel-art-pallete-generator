@@ -2,7 +2,7 @@ import "./Loader.css";
 
 function Loader(props: any) {
 
-  return (<>
+  return (<div>
     <div className="spinner">
       <div className="rect1"></div>
       <div className="rect2"></div>
@@ -10,8 +10,7 @@ function Loader(props: any) {
       <div className="rect4"></div>
       <div className="rect5"></div>
     </div>
-    <div>{props.percent ?? ""}</div>
-  </>
+  </div >
   );
 }
 
