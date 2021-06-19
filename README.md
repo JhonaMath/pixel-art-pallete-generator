@@ -12,3 +12,6 @@ You can upload your image pixel art and it will get the pallet of colors, and yo
 This was my first attempt using hooks and I want to improve the organizatiion of the code
 
 Hope you enjoy this :)
+
+# License
+[MIT](https://choosealicense.com/licenses/mit/)
