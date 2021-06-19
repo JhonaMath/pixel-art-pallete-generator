@@ -16,7 +16,7 @@ import MailIcon from '@material-ui/icons/Mail';
 import dibujo from './logo.png';
 import Pallete, { Color } from './pallete/Pallete';
 import PixelPerfect from './pixelPerfectDiv/PixelPerfect';
-import { getImageData, getPalleteFromImageData, changeColorFromImageData, convertImageDataToImage, readImage, convertColorToHex, writeImageData, generateRandomColorHSL, fromHSLToRGB, getPalleteWithPosFromImageData, changeColorPosFromImageData } from './helpers/CanvasHelper';
+import { getImageData, getPalleteFromImageData, convertImageDataToImage, readImage, convertColorToHex, writeImageData, generateRandomColorHSL, fromHSLToRGB, getPalleteWithPosFromImageData, changeColorPosFromImageData } from './helpers/CanvasHelper';
 import { fromRGBToHSL } from './helpers/CanvasHelper';
 
 export interface ColorPos {
@@ -217,7 +217,7 @@ function App() {
 
     }
 
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="App">

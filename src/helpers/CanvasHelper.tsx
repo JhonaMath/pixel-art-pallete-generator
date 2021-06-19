@@ -76,17 +76,10 @@ export function getPalleteFromImageData(dataImage: any): Color[] {
 }
 
 export function getPalleteWithPosFromImageData(dataImage: any): ColorPos[] {
-
-    let percent = 0;
     const mapOfColorPos = new Map<number, ColorPos>();
     const auxList: Color[] = [];
 
     const numPixels = dataImage.width * dataImage.height;
-
-    let lastSum = -1;
-
-    const valueToIncrementPer = Math.floor(numPixels / 100);
-
 
     for (let i = 0; (i) < numPixels; i++) {
 
@@ -143,8 +136,6 @@ export function changeColorFromImageData(oldColor: Color, newColor: Color, dataI
 
 export function changeColorPosFromImageData(oldColor: ColorPos, newColor: Color, dataImage: any) {
 
-    const numPixels = dataImage.width * dataImage.height;
-
     for (let i = 0; i < oldColor.positions.length; i++) {
         const pos = oldColor.positions[i];
 
@@ -154,20 +145,6 @@ export function changeColorPosFromImageData(oldColor: ColorPos, newColor: Color,
         dataImage.data[pos * 4 + 3] = newColor.a;
 
     }
-
-    // for (let i = 0; (i) < numPixels; i++) {
-    //     const c1 = dataImage.data[i * 4] === oldColor.r;
-    //     const c2 = dataImage.data[i * 4 + 1] === oldColor.g;
-    //     const c3 = dataImage.data[i * 4 + 2] === oldColor.b;
-    //     const c4 = dataImage.data[i * 4 + 3] === oldColor.a;
-
-    //     if (c1 && c2 && c3 && c4) {
-    //         dataImage.data[i * 4] = newColor.r;
-    //         dataImage.data[i * 4 + 1] = newColor.g;
-    //         dataImage.data[i * 4 + 2] = newColor.b;
-    //         dataImage.data[i * 4 + 3] = newColor.a;
-    //     }
-    // }
 
     return dataImage;
 }
